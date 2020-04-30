@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="background-color: cornflowerblue;">
+
+    <canvas id="canvas" style="background-color: aliceblue;"></canvas>
+    <button onclick="moveLeft()">Left</button>
+    <button onclick="moveStop()">Stop</button>
+    <button onclick="moveStart()">Start</button>
+    <button onclick="moveRight()">Right</button>
+
+    <script>
+        document.addEventListener('keydown', move);
+        document.addEventListener('keyup', moveStop);
+        document.addEventListener('keypress', move);
+
+        function move(ev) {
+            console.log(ev);
+            switch (ev.keyCode) {
+                case 37:
+                    moveLeft();
+                    break;
+                case 39:
+                    moveRight()
+                    break;
+                default:
+                    moveStop();
+            }
+        }
+
+        var speed = 10;
+
+        var canvasWidth = window.innerWidth - 15;
+        var canvasHeight = 350;
+
+        var sheetWidth = 864;
+        var sheetHeight = 280;
+
+        var rows = 2;
+        var cols = 8;
+
+        var x = 0;
+        var y = 150;
+
+        var srcX = 0;
+        var srcY = 0;
+
+        var trackLeft = 1;
+        var trackRight = 0;
+
+        var trackDirection = trackRight;
+
+        var width = sheetWidth / cols;
+        var height = sheetHeight / rows;
+
+        var currentFrame = 0;
+
+        var character = new Image();
+        character.src = "character.png";
+
+        var canavas = document.getElementById('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        var ctx = canvas.getContext('2d');
+
+        function moveRight() {
+            x += speed;
+            console.log(x);
+            trackDirection = trackRight;
+            moveStart();
+        }
+
+        function moveLeft() {
+            x -= speed;
+            console.log(x);
+            trackDirection = trackLeft;
+            moveStart();
+        }
+
+        function updateFrame() {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            currentFrame = ++currentFrame % cols;
+            srcX = currentFrame * width;
+            srcY = trackDirection * height;
+        }
+
+        function drawImage() {
+            updateFrame();
+
+            ctx.drawImage(
+                character,
+                srcX,
+                srcY,
+                width,
+                height,
+                x,
+                y,
+                width,
+                height
+            );
+        }
+
+        function drawImageStop() {
+            updateFrame();
+
+            ctx.drawImage(
+                character,
+                864,
+                srcY,
+                width,
+                height,
+                x,
+                y,
+                width,
+                height
+            );
+        }
+
+        var personMoving = null;
+
+        function moveStart() {
+            if (!personMoving) {
+                personMoving = setInterval(function () {
+                    drawImage();
+                }, 100);
+            }
+        }
+
+        function moveStop() {
+            drawImageStop();
+            clearInterval(personMoving);
+            personMoving = null;
+        }
+    </script>
+
+</body>
+
+</html>
